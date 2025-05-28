@@ -175,66 +175,6 @@ impl ArbitrageScanner {
         self.token_b = new_token;
     }
     
-    pub async fn scan_for_opportunity(&mut self) -> Result<Option<ArbitrageOpportunity>> {
-        // Increment iteration counter
-        self.iteration += 1;
-        
-        // Log manufacturing settings on first iteration
-        if self.iteration == 1 {
-            if self.config.use_manufactured_quotes {
-                info!("Quote manufacturing is ENABLED (model: {}, factor: {:.2})", 
-                      self.config.price_impact_model, 
-                      self.config.price_impact_factor);
-                
-                if self.config.validate_large_quotes {
-                    info!("Large quote validation is ENABLED (threshold: {} SOL)", 
-                          self.config.validation_threshold_sol);
-                } else {
-                    info!("Large quote validation is DISABLED");
-                }
-            } else {
-                info!("Quote manufacturing is DISABLED - using real quotes for all transactions");
-            }
-        }
-        
-        // Get configuration values
-        let trade_size_sol = self.config.trade_size_sol;
-        let min_profit_threshold = self.config.min_profit_threshold;
-        let slippage_bps = self.config.slippage_bps as u64;
-        
-        // Scan for arbitrage opportunities
-        let opportunity = self.scan_for_arbitrage_opportunities(
-            &self.token_a,
-            &self.token_b,
-            trade_size_sol,
-            min_profit_threshold,
-            slippage_bps,
-        ).await?;
-        
-        // If we found an opportunity, update max profit spotted
-        if let Some(ref opp) = opportunity {
-            if opp.profit_percentage > self.max_profit_spotted {
-                self.max_profit_spotted = opp.profit_percentage;
-            }
-            
-            // Only log every so often
-            if self.iteration % LOG_OPPORTUNITIES_INTERVAL == 0 {
-                let quote_src = if opp.manufactured_quotes { "manufactured" } else { "real" };
-                info!("Found opportunity with profit {:.4}% (using {} quotes), max profit spotted so far: {:.4}%", 
-                      opp.profit_percentage,
-                      quote_src,
-                      self.max_profit_spotted);
-            }
-        } else if self.iteration % LOG_PROFIT_INTERVAL == 0 {
-            // Log max profit periodically
-            debug!("Iteration {}, no opportunity found, max profit spotted so far: {:.4}%", 
-                   self.iteration, 
-                   self.max_profit_spotted);
-        }
-        
-        Ok(opportunity)
-    }
-    
     // Refined manufacture_quote function with improved price impact modeling
     fn manufacture_quote(
         &self,
