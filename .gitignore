@@ -1,6 +1,19 @@
-*~
-*.o
-*.a
-.scon*
-config.log
-photovoltaic
+# Ignore generated files
+/target/
+
+# Ignore Cargo.lock if you're developing a library
+# If you're developing an executable, you might want to keep Cargo.lock for reproducible builds
+
+# Ignore test-ledger data
+test-ledger/
+
+# Ignore other unnecessary files
+.DS_Store
+*.rs.bk
+node_modules/
+.env
+instruction-parser/
+address-lookup-table
+jito-rust-rpc/
+/src/instruction_cache.json
+/src/ata_cache.jsongit

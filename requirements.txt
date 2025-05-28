@@ -1,5 +1,0 @@
-pymongo>=1.8
-pysolr>=2.0.12
-
-# Not required if on python 2.7
-argparse>=1.1

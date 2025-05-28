@@ -1,0 +1,73 @@
+[package]
+name = "arbitrage-bot"
+version = "0.1.0"
+edition = "2021"
+
+# Remove the workspace section or modify it
+# [workspace]
+
+[dependencies]
+# Async runtime
+tokio = { version = "1.28", features = ["full"] }
+
+# Web framework
+axum = "0.6.18"
+tower-http = { version = "0.4.0", features = ["cors", "trace"] }
+
+# Solana SDK
+solana-sdk = { version = "1.16", features = ["full"] }
+solana-client = "1.16"
+solana-transaction-status = "1.16"
+
+# Serialization/Deserialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+serde_with = "3.0"
+bincode = "1.3"
+base64 = "0.21.0"
+
+# HTTP client
+reqwest = { version = "0.11", features = ["json"] }
+
+# Utilities
+dotenv = "0.15"
+anyhow = "1.0"
+thiserror = "1.0"
+log = "0.4"
+env_logger = "0.10"
+chrono = { version = "0.4", features = ["serde"] }
+rand = "0.8"
+base58 = "0.2"
+bs58 = "0.4"
+
+# Configuration
+config = "0.13"
+
+# Async utilities
+futures = "0.3"
+async-trait = "0.1"
+
+# CLI
+clap = { version = "4.3", features = ["derive"] }
+colored = "2.0"
+indicatif = "0.17"
+
+# Add these dependencies
+lazy_static = "1.4.0"
+num_cpus = "1.16.0"
+
+# Add these dependencies for CPI swap
+borsh = "1.5"
+sha2 = "0.10"
+
+# Add these dependencies
+spl-token = "3.5.0"
+spl-associated-token-account = "1.1.3"
+solana-address-lookup-table-program = "1.10.1"
+
+# Add Jupiter SDK dependency
+jupiter-sdk = { path = "./jupiter-sdk" }
+regex = "1.9"
+
+# Add LRU cache implementation
+lru = "0.10"

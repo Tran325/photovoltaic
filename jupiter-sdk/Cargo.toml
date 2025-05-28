@@ -1,0 +1,12 @@
+[package]
+name = "jupiter-sdk"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+solana-program = ">=1.16"
+borsh = "^0.10"
+thiserror = "1.0.58"
+num-derive = "0.4.2"
+num-traits = "0.2.18"   
+base64 = "0.21.0"
