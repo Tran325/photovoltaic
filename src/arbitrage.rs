@@ -260,45 +260,6 @@ impl ArbitrageScanner {
         let impact_model = self.config.price_impact_model.to_lowercase();
         let impact_factor = self.config.price_impact_factor;
             
-        // Calculate impact scaling based on the selected model
-        let impact_scaling = match impact_model.as_str() {
-            "linear" => {
-                // Linear scaling - impact directly proportional to size
-                scale_factor * impact_factor
-            },
-            "sqrt" => {
-                // Square root scaling - impact increases with sqrt of size (default)
-                if scale_factor > 1.0 {
-                    (scale_factor.sqrt()) * impact_factor
-                } else {
-                    scale_factor * impact_factor
-                }
-            },
-            "square" => {
-                // Square scaling - impact increases with square of size (more aggressive)
-                if scale_factor > 1.0 {
-                    (scale_factor * scale_factor).sqrt() * impact_factor
-                } else {
-                    scale_factor * impact_factor
-                }
-            },
-            "log" => {
-                // Logarithmic scaling - impact increases with log of size (more conservative)
-                if scale_factor > 1.0 {
-                    (1.0 + scale_factor.ln()) * impact_factor
-                } else {
-                    scale_factor * impact_factor
-                }
-            },
-            _ => {
-                // Default to sqrt model
-                if scale_factor > 1.0 {
-                    (scale_factor.sqrt()) * impact_factor
-                } else {
-                    scale_factor * impact_factor
-                }
-            }
-        };
         
         // Extract the original price impact as a decimal
         let original_impact = match small_quote.price_impact_pct.parse::<f64>() {
