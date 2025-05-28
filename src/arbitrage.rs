@@ -93,39 +93,6 @@ where
     Ok(pubkey_map)
 }
 
-// Custom serializer for the Pubkey keys to convert to strings
-fn serialize_pubkey_map<S>(
-    pubkey_map: &HashMap<Pubkey, bool>,
-    serializer: S,
-) -> std::result::Result<S::Ok, S::Error>
-where
-    S: serde::Serializer,
-{
-    use serde::ser::SerializeMap;
-    
-    let mut map = serializer.serialize_map(Some(pubkey_map.len()))?;
-    for (pubkey, value) in pubkey_map {
-        map.serialize_entry(&pubkey.to_string(), value)?;
-    }
-    map.end()
-}
-
-// Functions to manipulate the ATA cache
-pub fn add_to_ata_cache(mint: &Pubkey) {
-    let mut cache = ATA_CACHE.lock().unwrap();
-    cache.insert(*mint, true);
-}
-
-pub fn is_in_ata_cache(mint: &Pubkey) -> bool {
-    let cache = ATA_CACHE.lock().unwrap();
-    cache.contains_key(mint)
-}
-
-pub fn init_ata_cache(cache_data: AtaCache) {
-    let mut cache = ATA_CACHE.lock().unwrap();
-    *cache = cache_data.accounts;
-    info!("Initialized ATA cache with {} entries", cache.len());
-}
 
 pub fn get_ata_cache() -> AtaCache {
     let cache = ATA_CACHE.lock().unwrap();
