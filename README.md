@@ -1,6 +1,6 @@
-# SOL Dynamic Arbitrage Bot
+# SOL Flashloan bot
 
-This bot scans for arbitrage opportunities on Solana using Jupiter aggregator, supporting token rotation to scan through multiple pairs.
+A Solana flash loan bot is an automated trading tool that leverages flash loans—uncollateralized, instant loans that must be borrowed and repaid within a single transaction—to exploit arbitrage opportunities, liquidate undercollateralized positions, or perform complex DeFi strategies on Solana. Unlike Ethereum, Solana’s high-speed, low-fee environment enables flash loans to execute in milliseconds, making them ideal for high-frequency trading (HFT) and MEV (Maximal Extractable Value) strategies.
 
 ## Configuration
 
@@ -23,34 +23,37 @@ TOKEN_ROTATION_CHECK_FREQUENCY=50 # How often to check for rotation (in number o
 TOKEN_ROTATION_INTERVAL_MINUTES=5 # How often to rotate tokens (time-based)
 ```
 
-## Token Rotation
+## How Solana Flash Loans Work
 
-The bot supports two token rotation modes that you can configure with the `IS_USE_TOKEN_ROTATION` option:
+- Atomic Execution: Flash loans on Solana are executed atomically within a single transaction, meaning if repayment fails, the entire transaction reverts.
 
-### Mode 1: Managed Rotation (IS_USE_TOKEN_ROTATION=true)
+- No Collateral Required: Unlike traditional loans, flash loans do not require upfront collateral, as they are borrowed and repaid in the same block.
 
-When enabled, the bot uses a sophisticated token rotation system:
+- Smart Contract Integration: Flash loans rely on Solana programs (smart contracts) like Raydium, Solend, or Flash Loan Pools to facilitate borrowing and repayment.
 
-1. The bot fetches trending tokens from Jupiter API with high volume.
-2. Each thread starts with a different token and cycles through all available tokens.
-3. Rotation happens:
-   - Every X scans (configured by the frequency in main.rs)
-   - At least every Y minutes (configured by TOKEN_ROTATION_INTERVAL_MINUTES)
-4. The system tracks which tokens have been used by each thread to prevent repeating the same tokens too frequently.
+- High-Speed Processing: Solana’s 400ms block time allows flash loan bots to execute multiple trades before Ethereum even processes a single block.
 
-### Mode 2: Sequential Scan (IS_USE_TOKEN_ROTATION=false)
+- The bot supports two token rotation modes that you can configure with the `IS_USE_TOKEN_ROTATION` option:
 
-When disabled, the bot uses a simple sequential rotation:
+## Key Strategies for Solana Flash Loan Bots
 
-1. The bot still fetches trending tokens from Jupiter API, but rotates through them more frequently.
-2. Each thread cycles to a new token every 5 scans, going through the entire token list sequentially.
-3. This provides rapid coverage of all tokens.
+- DEX Arbitrage: Exploiting price differences between Serum, Orca, and Raydium.
 
-### Tuning Token Rotation
+- Liquidation Hunting: Repaying undercollateralized loans in lending protocols (e.g., Solend, Port Finance) for rewards.
 
-- For Mode 1 (managed): Adjust `TOKEN_ROTATION_INTERVAL_MINUTES` and token_rotation_check_frequency in main.rs
-- For Mode 2 (sequential): The rotation frequency is fixed at every 5 scans
-- For more parallel scanning: Increase `THREAD_AMOUNT` (each thread will handle different tokens)
+- Token Swaps with Leverage: Using flash loans to amplify trading positions without capital.
+
+- NFT Flipping: Flash-borrowing SOL to snipe undervalued NFTs and resell them instantly.
+
+## Technical Stack for Building a Solana Flash Loan Bot
+
+- Programming Languages: Rust (for Solana programs), Python/TypeScript (for bot logic).
+
+- Solana SDKs: Anchor Framework, Solana Web3.js, Solana-py.
+
+- APIs & Tools: Jupiter Aggregator API, Pyth Network for pricing, Jito for MEV optimization.
+
+- Wallets: Phantom (for testing), with programmatic key management.
 
 ## Running the Bot
 
@@ -92,8 +95,3 @@ The bot includes several performance optimizations for efficient market scanning
 2. **Sequential Token Rotation** (when `IS_USE_TOKEN_ROTATION=false`): The bot cycles through tokens every 5 scans, providing comprehensive market coverage.
 
 3. **Quote Manufacturing**: Reduces API calls by mathematically modeling price impact for larger trades based on small trade quotes.
-
-You can enable/disable it using the USE_MANUFACTURED_QUOTES environment variable (default: true)
-You can control the validation of large trades with VALIDATE_LARGE_QUOTES and VALIDATION_THRESHOLD_SOL
-You can adjust the price impact model using PRICE_IMPACT_MODEL ("sqrt", "linear", "square", or "log")
-You can validate the accuracy of quote manufacturing with --validate-quotes
